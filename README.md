@@ -7,9 +7,9 @@
 ```bash
 uv sync
 cp .env.example .env
-make test
-make dev
+uv run pytest -q
+uv run uvicorn app.main:app --reload --port 8000
 curl http://127.0.0.1:8000/health
 ```
 
-> `docker compose`、数据库迁移与演示管道会在后续 M0 任务中加入。
+> `Makefile` 为可选快捷方式，需要 GNU Make；`docker compose`、数据库迁移与演示管道会在后续 M0 任务中加入。
