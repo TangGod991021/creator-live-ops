@@ -15,25 +15,27 @@ _KEY_NAMES = (
 _SECRET_PATTERN = re.compile(
     rf"""(?ix)
     (?P<prefix>
-        ["']?
+        (?:\\?["'])?
         (?<![A-Za-z0-9_])
         (?:{_KEY_NAMES})
         (?![A-Za-z0-9_])
-        ["']?
+        (?:\\?["'])?
         \s*[:=]\s*
     )
     (?P<value>
         \\"[^"\\]*\\" |
         "[^"]*" |
         '[^']*' |
-        [^\s,;&}}]+
+        [^\s,;&"\\}}]+
     )
     """
 )
 _AUTH_PATTERN = re.compile(
-    r"(?i)(?P<prefix>\bauthorization\s*[:=]\s*)(?P<value>[^\r\n,;&}]+)"
+    r"(?i)(?P<prefix>\bauthorization\s*[:=]\s*)(?P<value>[^\r\n,;&\"\\}]+)"
 )
-_COOKIE_PATTERN = re.compile(r"(?i)(?P<prefix>\bcookie\s*[:=]\s*)(?P<value>[^\r\n]+)")
+_COOKIE_PATTERN = re.compile(
+    r"(?i)(?P<prefix>\bcookie\s*[:=]\s*)(?P<value>[^\r\n\"\\]+)"
+)
 _URL_CRED_PATTERN = re.compile(r"(?P<prefix>://[^:/\s]+:)(?P<value>[^@\s]+)(?P<suffix>@)")
 _PHONE_PATTERN = re.compile(
     r"(?<!\d)(?P<prefix>\+?86[- ]?)?(?P<core>1[3-9]\d(?:[- ]?\d{4}){2})(?!\d)"

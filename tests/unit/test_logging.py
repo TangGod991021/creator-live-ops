@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from loguru import logger
 
@@ -63,31 +65,64 @@ def test_redact_phone_with_hyphens() -> None:
     assert redact("138-1234-5678") == "138****5678"
 
 
-def test_setup_logging_redacts_plain_message(capsys: pytest.CaptureFixture[str]) -> None:
+def test_setup_logging_redacts_and_keeps_plain_output(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     setup_logging()
     logger.info("password=abc123 phone 13812345678")
-    stderr = capsys.readouterr().err
-    assert "abc123" not in stderr
-    assert "13812345678" not in stderr
+    err = capsys.readouterr().err
+    assert "password=***" in err
+    assert "138****5678" in err
+    assert "abc123" not in err
+    assert "13812345678" not in err
 
 
-def test_setup_logging_redacts_json_extra(capsys: pytest.CaptureFixture[str]) -> None:
+def test_setup_logging_json_extra_is_valid_and_redacted(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     setup_logging(json_logs=True)
     logger.info("login", token="SUPERSECRET", password="abc123")
-    stderr = capsys.readouterr().err
-    assert "SUPERSECRET" not in stderr
-    assert "abc123" not in stderr
+    records = [json.loads(line) for line in capsys.readouterr().err.splitlines() if line]
+    assert records[0]["record"]["extra"]["token"] == "***"
+    assert records[0]["record"]["extra"]["password"] == "***"
+    assert "SUPERSECRET" not in json.dumps(records[0])
+    assert "abc123" not in json.dumps(records[0])
 
 
-def test_setup_logging_redacts_exception_text(capsys: pytest.CaptureFixture[str]) -> None:
+def test_setup_logging_json_output_is_valid_for_secret_messages(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    setup_logging(json_logs=True)
+    logger.info("password=abc123")
+    logger.info("Authorization: Bearer SECRET123")
+    logger.info("Cookie: sid=SECRET123")
+    records = [json.loads(line) for line in capsys.readouterr().err.splitlines() if line]
+    assert len(records) == 3
+    assert all("***" in record["text"] for record in records)
+    serialized = json.dumps(records)
+    assert "abc123" not in serialized
+    assert "SECRET123" not in serialized
+
+
+def test_setup_logging_json_message_payload(capsys: pytest.CaptureFixture[str]) -> None:
+    setup_logging(json_logs=True)
+    logger.info(json.dumps({"password": "abc123", "user": "u"}))
+    records = [json.loads(line) for line in capsys.readouterr().err.splitlines() if line]
+    assert "abc123" not in records[0]["text"]
+    assert "***" in records[0]["text"]
+
+
+def test_setup_logging_redacts_exception(capsys: pytest.CaptureFixture[str]) -> None:
     setup_logging()
     try:
         raise RuntimeError("password=hunter2 phone 13812345678")
     except RuntimeError:
         logger.exception("boom")
-    stderr = capsys.readouterr().err
-    assert "hunter2" not in stderr
-    assert "13812345678" not in stderr
+    err = capsys.readouterr().err
+    assert "RuntimeError" in err
+    assert "password=***" in err
+    assert "hunter2" not in err
+    assert "13812345678" not in err
 
 
 def test_setup_logging_removes_existing_handlers() -> None:

@@ -94,6 +94,22 @@ def test_key_id_of_and_needs_reencrypt() -> None:
     assert box.needs_reencrypt(token) is False
 
 
+def test_needs_reencrypt_for_other_key() -> None:
+    old = make_box()
+    new = SecretBox(base64.b64encode(b"n" * 32).decode(), key_id="k2")
+    assert old.needs_reencrypt(new.encrypt("hello")) is True
+
+
+def test_key_id_empty_rejected() -> None:
+    with pytest.raises(ValueError, match="key_id"):
+        SecretBox(base64.b64encode(b"k" * 32).decode(), key_id="")
+
+
+def test_key_id_too_long_rejected() -> None:
+    with pytest.raises(ValueError, match="key_id"):
+        SecretBox(base64.b64encode(b"k" * 32).decode(), key_id="k" * 21)
+
+
 def test_reencrypt_to_new_box() -> None:
     old_box = make_box()
     new_box = SecretBox(base64.b64encode(b"z" * 32).decode(), key_id="k2")
