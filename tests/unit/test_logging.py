@@ -36,6 +36,33 @@ def test_redact_does_not_touch_max_tokens() -> None:
     assert redact("max_tokens=100") == "max_tokens=100"
 
 
+def test_redact_composite_key_names() -> None:
+    assert (
+        redact("db_password=hunter2 oauth_access_token=abc")
+        == "db_password=*** oauth_access_token=***"
+    )
+
+
+def test_redact_escaped_quoted_value() -> None:
+    assert redact('password=\\"abc def\\"') == 'password=\\"***\\"'
+
+
+def test_redact_url_credentials() -> None:
+    assert redact("mysql://user:pw@host:3306/db") == "mysql://user:***@host:3306/db"
+
+
+def test_redact_cookie_header() -> None:
+    assert redact("Cookie: a=1; b=2") == "Cookie: ***"
+
+
+def test_redact_phone_with_country_code() -> None:
+    assert redact("+8613812345678") == "+86138****5678"
+
+
+def test_redact_phone_with_hyphens() -> None:
+    assert redact("138-1234-5678") == "138****5678"
+
+
 def test_setup_logging_redacts_plain_message(capsys: pytest.CaptureFixture[str]) -> None:
     setup_logging()
     logger.info("password=abc123 phone 13812345678")

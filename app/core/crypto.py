@@ -49,9 +49,9 @@ class SecretBox:
             nonce = base64.b64decode(nonce_b64, validate=True)
             ciphertext = base64.b64decode(ciphertext_b64, validate=True)
             plaintext = self._aes.decrypt(nonce, ciphertext, associated)
+            return plaintext.decode("utf-8")
         except (InvalidTag, binascii.Error, ValueError) as exc:
             raise InvalidTokenError("token authentication failed") from exc
-        return plaintext.decode("utf-8")
 
     @staticmethod
     def _split(token: str) -> tuple[str, str, str, str]:
