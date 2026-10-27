@@ -1,0 +1,28 @@
+dataset: settlements
+resource: settlements
+target_table: ods_settlement
+encoding: utf-8-sig
+delimiter: ","
+window_column: settle_at
+key_columns: [settlement_id]
+required: [settlement_id]
+datetime_columns: [settle_at]
+decimal_columns: [settle_amount, commission_amount, talent_commission, service_fee, platform_fee]
+on_error: skip
+fields:
+  结算单号: settlement_id
+  settlement_id: settlement_id
+  订单编号: order_id
+  order_id: order_id
+  结算时间: settle_at
+  settle_at: settle_at
+  结算金额: settle_amount
+  settle_amount: settle_amount
+  佣金金额: commission_amount
+  commission_amount: commission_amount
+  达人佣金: talent_commission
+  talent_commission: talent_commission
+  服务费: service_fee
+  service_fee: service_fee
+  平台服务费: platform_fee
+  platform_fee: platform_fee

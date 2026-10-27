@@ -1,0 +1,26 @@
+dataset: live_rooms
+resource: live_rooms
+target_table: ods_live_room
+encoding: utf-8-sig
+delimiter: ","
+window_column: null
+key_columns: [room_id]
+required: [room_id]
+datetime_columns: [start_at, end_at]
+decimal_columns: []
+on_error: skip
+fields:
+  直播间ID: room_id
+  room_id: room_id
+  店铺ID: shop_id
+  shop_id: shop_id
+  达人ID: talent_id
+  talent_id: talent_id
+  直播间标题: title
+  title: title
+  开播时间: start_at
+  start_at: start_at
+  下播时间: end_at
+  end_at: end_at
+  状态: status
+  status: status
