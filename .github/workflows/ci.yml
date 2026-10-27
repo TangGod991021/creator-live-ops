@@ -44,4 +44,5 @@ jobs:
       - run: uv run mypy app
       - run: uv run alembic upgrade head
       - run: uv run pytest -q
+      - run: cp .env.example .env
       - run: docker compose config --quiet
