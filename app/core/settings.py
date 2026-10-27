@@ -30,6 +30,18 @@ class Settings(BaseSettings):
     job_dir: str = "jobs"
     model_dir: str = "models"
     metrics_file: str = "metrics/metrics.yml"
+    douyin_app_key: SecretStr = SecretStr("")
+    douyin_app_secret: SecretStr = SecretStr("")
+    douyin_access_token: SecretStr = SecretStr("")
+    douyin_refresh_token: SecretStr = SecretStr("")
+    douyin_shop_id: str = ""
+    douyin_base_url: str = "https://openapi-fxg.jinritemai.com"
+    qianchuan_access_token: SecretStr = SecretStr("")
+    qianchuan_advertiser_pairs: str = ""
+    qianchuan_base_url: str = "https://api.oceanengine.com/open_api"
+    csv_import_dir: str = "data/csv"
+    csv_mappings_dir: str = "app/adapters/csv/mappings"
+    http_timeout_seconds: float = 20.0
 
     @field_validator("encryption_key", mode="before")
     @classmethod
@@ -74,6 +86,26 @@ class Settings(BaseSettings):
     @property
     def encryption_key_value(self) -> str:
         return self.encryption_key.get_secret_value()
+
+    @property
+    def douyin_app_key_value(self) -> str:
+        return self.douyin_app_key.get_secret_value()
+
+    @property
+    def douyin_app_secret_value(self) -> str:
+        return self.douyin_app_secret.get_secret_value()
+
+    @property
+    def douyin_access_token_value(self) -> str:
+        return self.douyin_access_token.get_secret_value()
+
+    @property
+    def douyin_refresh_token_value(self) -> str:
+        return self.douyin_refresh_token.get_secret_value()
+
+    @property
+    def qianchuan_access_token_value(self) -> str:
+        return self.qianchuan_access_token.get_secret_value()
 
     @property
     def sync_database_url(self) -> str:
