@@ -56,6 +56,10 @@ Windows 没有 GNU Make 时，直接运行对应的 `uv run ...` 命令即可。
 
 见 [docs/architecture.md](docs/architecture.md)。
 
+## 分支与发布
+
+见 [docs/branching.md](docs/branching.md)：`main` 生产基线、`develop` 日常集成、`feature/*` 短分支、`release/*` 发布冻结、`hotfix/*` 生产修复。
+
 ## 指标口径
 
 见 [docs/metrics.md](docs/metrics.md)。
