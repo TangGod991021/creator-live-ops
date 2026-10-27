@@ -16,6 +16,7 @@ async def db_engine():
         "mysql+asyncmy://root:root@127.0.0.1:3306/ecom_ops?charset=utf8mb4",
     )
     import app.db.demo_models  # noqa: F401
+    import app.db.ods_models  # noqa: F401
 
     engine = create_async_engine(url, pool_pre_ping=True)
     async with engine.begin() as conn:

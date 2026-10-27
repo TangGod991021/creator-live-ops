@@ -18,3 +18,5 @@ class JobDefinition:
     retry: RetryPolicy = field(default_factory=RetryPolicy)
     timeout_seconds: int = 900
     enabled: bool = True
+    kind: str = "sql"
+    adapter: str = ""
