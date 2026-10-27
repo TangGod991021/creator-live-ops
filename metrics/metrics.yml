@@ -1,0 +1,23 @@
+version: 1
+timezone: Asia/Shanghai
+metrics:
+  gmv:
+    name: 成交金额
+    source: dwd_demo_order
+    consumer: dws_demo_talent_daily
+    formula: "SUM(pay_amount)"
+    attribution: pay_time
+    filters:
+      - "pay_at IS NOT NULL"
+  order_count:
+    name: 成交单量
+    source: dwd_demo_order
+    consumer: dws_demo_talent_daily
+    formula: "COUNT(*)"
+    attribution: pay_time
+  avg_order_value:
+    name: 客单价
+    source: dws_demo_talent_daily
+    consumer: ads_demo_talent_daily
+    formula: "gmv / NULLIF(order_count, 0)"
+    attribution: pay_time

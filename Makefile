@@ -1,4 +1,4 @@
-.PHONY: install dev test lint migrate seed up down
+.PHONY: install dev test integration lint migrate seed up down smoke
 
 install:
 	uv sync
@@ -8,6 +8,9 @@ dev:
 
 test:
 	uv run pytest -q
+
+integration:
+	RUN_INTEGRATION=1 uv run pytest -q
 
 lint:
 	uv run ruff check .
@@ -24,3 +27,6 @@ up:
 
 down:
 	docker compose down
+
+smoke:
+	curl -s http://127.0.0.1:8000/health

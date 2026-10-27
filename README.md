@@ -1,15 +1,53 @@
 # creator-live-ops
 
-达人店播经营数据底座。M0 骨架开发中。
+达人店播经营数据底座。用 Python + FastAPI 重做电商数据采集与数仓编排，v1 聚焦抖音平台的达人与店播经营分析。
 
-## 快速开始（M0 Task 1 阶段）
+## 能力边界
+
+- ✅ 抖音官方开放平台：订单、售后、结算、直播时段、千川消耗
+- ✅ 达人 × 店播统一数据模型与指标口径
+- ✅ 单库分层前缀；多 schema 为预留能力（M0 仅验证 `single_db`）
+- ✅ 按凭证分车道调度，车道内串行、车道间并行
+- ✅ 敏感配置应用层加密、默认掩码
+- ⛔ v1 不做小红书/微信小店（留接口）
+- ⛔ v1 不做星图合作数据（留预留表）
+- ⛔ v1 不做直播间流量指标（只做成交/退款/单量/消耗）
+- ⛔ v1 不含业务前端，只提供数据 API 与 Metabase 示例看板
+
+## 快速开始
 
 ```bash
-uv sync
 cp .env.example .env
-uv run pytest -q
-uv run uvicorn app.main:app --reload --port 8000
+KEY=$(uv run python -c "import base64,os;print(base64.b64encode(os.urandom(32)).decode())")
+sed -i "s|^ENCRYPTION_KEY=.*|ENCRYPTION_KEY=$KEY|" .env
+uv sync
+docker compose up -d --build
 curl http://127.0.0.1:8000/health
+curl -H "X-API-Key: change-me" http://127.0.0.1:8000/api/v1/jobs
 ```
 
-> `Makefile` 为可选快捷方式，需要 GNU Make；`docker compose`、数据库迁移与演示管道会在后续 M0 任务中加入。
+> `API_KEY` 在 dev 默认为 `change-me`；生产环境必须改为强随机值，且 `ENCRYPTION_KEY` 不能为空。
+
+## 开发
+
+```bash
+make test          # 单元测试
+make lint          # ruff + mypy
+make migrate       # 数据库迁移
+docker compose up -d mysql
+RUN_INTEGRATION=1 uv run pytest -q
+```
+
+Windows 没有 GNU Make 时，直接运行对应的 `uv run ...` 命令即可。
+
+## 架构
+
+见 [docs/architecture.md](docs/architecture.md)。
+
+## 指标口径
+
+见 [docs/metrics.md](docs/metrics.md)。
+
+## 许可证
+
+Apache-2.0。

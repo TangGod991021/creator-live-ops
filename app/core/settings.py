@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     enable_scheduler: bool = False
     job_dir: str = "jobs"
     model_dir: str = "models"
+    metrics_file: str = "metrics/metrics.yml"
 
     @field_validator("encryption_key", mode="before")
     @classmethod

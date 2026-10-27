@@ -1,0 +1,11 @@
+id: demo_pipeline
+lane: csv_import
+schedule: "*/5 * * * *"
+resource: demo
+window: day
+depends_on: []
+retry:
+  max_attempts: 2
+  backoff_seconds: 5
+timeout_seconds: 300
+enabled: true
