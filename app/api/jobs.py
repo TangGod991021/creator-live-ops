@@ -26,6 +26,8 @@ def _serialize(job: JobDefinition) -> dict:
         "window": job.window,
         "depends_on": list(job.depends_on),
         "enabled": job.enabled,
+        "kind": job.kind,
+        "adapter": job.adapter,
     }
 
 

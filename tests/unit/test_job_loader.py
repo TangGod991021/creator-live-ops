@@ -79,3 +79,39 @@ window: hour
     write_job(tmp_path, "b.yml", body)
     with pytest.raises(JobConfigError, match="duplicate job id"):
         load_jobs(tmp_path)
+
+
+def test_ingest_job_requires_adapter(tmp_path: Path) -> None:
+    path = write_job(
+        tmp_path,
+        "ingest.yml",
+        """
+id: ingest_orders
+lane: csv_import
+schedule: "0 1 * * *"
+resource: orders
+window: day
+kind: ingest
+""",
+    )
+    with pytest.raises(JobConfigError, match="adapter"):
+        load_job_file(path)
+
+
+def test_ingest_job_parses_adapter(tmp_path: Path) -> None:
+    path = write_job(
+        tmp_path,
+        "ingest.yml",
+        """
+id: ingest_orders
+lane: csv_import
+schedule: "0 1 * * *"
+resource: orders
+window: day
+kind: ingest
+adapter: csv_import
+""",
+    )
+    job = load_job_file(path)
+    assert job.kind == "ingest"
+    assert job.adapter == "csv_import"

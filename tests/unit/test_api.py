@@ -21,7 +21,10 @@ def test_jobs_endpoint(client: TestClient) -> None:
     assert response.status_code == 200
     body = response.json()
     assert body["code"] == 0
-    assert body["data"][0]["id"] == "demo_pipeline"
+    ids = {item["id"] for item in body["data"]}
+    assert "demo_pipeline" in ids
+    demo = next(item for item in body["data"] if item["id"] == "demo_pipeline")
+    assert demo["kind"] == "sql"
 
 
 def test_catalog_endpoint(client: TestClient) -> None:

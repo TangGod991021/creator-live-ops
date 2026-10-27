@@ -54,37 +54,44 @@ class JobService:
             await self._session.commit()
             await self._session.refresh(run)
 
-            renderer = TableRenderer(self._settings.warehouse_layout)
-            models = load_models(Path(self._settings.model_dir))
-            quality_checks: list[QualityCheck] = []
-            if (
-                self._settings.warehouse_layout == "single_db"
-                and "ads_demo_talent_daily" in models
-            ):
-                quality_checks.append(
-                    QualityCheck(
-                        model_name="ads_demo_talent_daily",
-                        test_name="gmv_not_null",
-                        sql=(
-                            "SELECT COUNT(*) FROM "
-                            f"{renderer.ref('ads_demo_talent_daily')} WHERE gmv IS NULL"
-                        ),
-                    )
-                )
-            runner = PipelineRunner(
-                self._session,
-                self._settings.model_dir,
-                renderer,
-            )
             try:
-                await runner.run(run.id, start_at, end_at)
-                quality = (
-                    await run_checks(self._session, run.id, quality_checks)
-                    if quality_checks
-                    else []
-                )
-                if any(item.status == "failed" for item in quality):
-                    raise RuntimeError("quality checks failed")
+                if job.kind == "ingest":
+                    from app.ingest.service import IngestionService
+
+                    ingestion = IngestionService(self._session, self._settings)
+                    await ingestion.run(job, run.id, start_at, end_at)
+                else:
+                    renderer = TableRenderer(self._settings.warehouse_layout)
+                    models = load_models(Path(self._settings.model_dir))
+                    quality_checks: list[QualityCheck] = []
+                    if (
+                        self._settings.warehouse_layout == "single_db"
+                        and "ads_demo_talent_daily" in models
+                    ):
+                        quality_checks.append(
+                            QualityCheck(
+                                model_name="ads_demo_talent_daily",
+                                test_name="gmv_not_null",
+                                sql=(
+                                    "SELECT COUNT(*) FROM "
+                                    f"{renderer.ref('ads_demo_talent_daily')} "
+                                    "WHERE gmv IS NULL"
+                                ),
+                            )
+                        )
+                    runner = PipelineRunner(
+                        self._session,
+                        self._settings.model_dir,
+                        renderer,
+                    )
+                    await runner.run(run.id, start_at, end_at)
+                    quality = (
+                        await run_checks(self._session, run.id, quality_checks)
+                        if quality_checks
+                        else []
+                    )
+                    if any(item.status == "failed" for item in quality):
+                        raise RuntimeError("quality checks failed")
                 run.status = "success"
                 run.finished_at = self._now()
                 await self._session.commit()

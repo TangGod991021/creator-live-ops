@@ -24,7 +24,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
         scheduler = SchedulerService(
             jobs=load_jobs(Path(settings.job_dir)),
-            lanes=LaneManager({"demo": 1, "csv_import": 2}),
+            lanes=LaneManager(
+                {
+                    "demo": 1,
+                    "douyin_shop": 1,
+                    "douyin_qianchuan": 1,
+                    "csv_import": 2,
+                }
+            ),
             session_factory=get_session_factory(),
             settings=settings,
         )

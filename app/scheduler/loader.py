@@ -35,6 +35,12 @@ def load_job_file(path: Path) -> JobDefinition:
         enabled = enabled_value.lower() == "true"
     else:
         raise JobConfigError(f"{path}: enabled must be a boolean")
+    kind = str(data.get("kind", "sql"))
+    if kind not in {"sql", "ingest"}:
+        raise JobConfigError(f"{path}: kind must be sql or ingest")
+    adapter = str(data.get("adapter", ""))
+    if kind == "ingest" and not adapter:
+        raise JobConfigError(f"{path}: ingest job requires adapter")
     return JobDefinition(
         id=str(data["id"]),
         lane=str(data["lane"]),
@@ -48,6 +54,8 @@ def load_job_file(path: Path) -> JobDefinition:
         ),
         timeout_seconds=int(data.get("timeout_seconds", 900)),
         enabled=enabled,
+        kind=kind,
+        adapter=adapter,
     )
 
 
