@@ -12,8 +12,9 @@ class JobLock:
         await self._session.execute(
             text(
                 """
-                INSERT IGNORE INTO sys_job_lock (job_id, lock_owner, locked_until)
+                INSERT INTO sys_job_lock (job_id, lock_owner, locked_until)
                 VALUES (:job_id, :owner, DATE_ADD(NOW(), INTERVAL :ttl SECOND))
+                ON DUPLICATE KEY UPDATE job_id = job_id
                 """
             ),
             {"job_id": job_id, "owner": self._owner, "ttl": self._ttl},
