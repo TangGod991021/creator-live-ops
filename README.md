@@ -28,6 +28,18 @@ curl -H "X-API-Key: change-me" http://127.0.0.1:8000/api/v1/jobs
 
 > `API_KEY` 在 dev 默认为 `change-me`；生产环境必须改为强随机值，且 `ENCRYPTION_KEY` 不能为空。
 
+## M1 接入
+
+```bash
+# 可选：配置抖店/千川凭证后，把对应 jobs/*.yml 的 enabled 改为 true
+cp .env.example .env
+
+# CSV 兜底：把导出文件放到 data/csv/<dataset>/*.csv
+uv run python -m app.executor.cli --job csv_live_rooms_daily
+```
+
+字段映射、凭证优先级、补数和水位规则见 [docs/ingestion.md](docs/ingestion.md)。
+
 ## 开发
 
 ```bash

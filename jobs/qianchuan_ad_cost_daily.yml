@@ -1,0 +1,13 @@
+id: qianchuan_ad_cost_daily
+lane: douyin_qianchuan
+schedule: "40 1 * * *"
+resource: ad_cost
+window: day
+kind: ingest
+adapter: douyin_qianchuan
+depends_on: []
+retry:
+  max_attempts: 3
+  backoff_seconds: 30
+timeout_seconds: 900
+enabled: false

@@ -1,4 +1,4 @@
-.PHONY: install dev test integration lint migrate seed up down smoke
+.PHONY: install dev test integration lint migrate seed run-job up down smoke
 
 install:
 	uv sync
@@ -21,6 +21,9 @@ migrate:
 
 seed:
 	uv run python -m app.executor.demo --job demo_pipeline
+
+run-job:
+	uv run python -m app.executor.cli --job $(JOB)
 
 up:
 	docker compose up -d --build

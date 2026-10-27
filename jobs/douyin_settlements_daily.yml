@@ -1,0 +1,13 @@
+id: douyin_settlements_daily
+lane: douyin_shop
+schedule: "30 1 * * *"
+resource: settlements
+window: day
+kind: ingest
+adapter: douyin_shop
+depends_on: []
+retry:
+  max_attempts: 3
+  backoff_seconds: 30
+timeout_seconds: 900
+enabled: false

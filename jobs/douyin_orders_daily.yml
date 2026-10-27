@@ -1,0 +1,13 @@
+id: douyin_orders_daily
+lane: douyin_shop
+schedule: "10 1 * * *"
+resource: orders
+window: day
+kind: ingest
+adapter: douyin_shop
+depends_on: []
+retry:
+  max_attempts: 3
+  backoff_seconds: 30
+timeout_seconds: 900
+enabled: false

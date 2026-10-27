@@ -1,0 +1,13 @@
+id: csv_live_rooms_daily
+lane: csv_import
+schedule: "30 2 * * *"
+resource: live_rooms
+window: day
+kind: ingest
+adapter: csv_import
+depends_on: []
+retry:
+  max_attempts: 2
+  backoff_seconds: 10
+timeout_seconds: 600
+enabled: true

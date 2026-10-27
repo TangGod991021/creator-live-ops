@@ -1,0 +1,13 @@
+id: csv_orders_daily
+lane: csv_import
+schedule: "0 2 * * *"
+resource: orders
+window: day
+kind: ingest
+adapter: csv_import
+depends_on: []
+retry:
+  max_attempts: 2
+  backoff_seconds: 10
+timeout_seconds: 600
+enabled: true

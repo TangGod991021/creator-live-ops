@@ -26,6 +26,8 @@ services:
       ENABLE_SCHEDULER: "false"
     ports:
       - "8000:8000"
+    volumes:
+      - ./data/csv:/app/data/csv
     depends_on:
       mysql:
         condition: service_healthy

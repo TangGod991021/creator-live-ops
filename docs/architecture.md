@@ -13,6 +13,23 @@ MySQL
 └─ ods_/dim_/dwd_/dws_/ads_  业务分层
 ```
 
+## M1 接入层
+
+```text
+SourceAdapter
+├─ DouyinShopAdapter    订单 / 售后 / 结算
+├─ QianchuanAdapter     投放消耗
+└─ CsvImportAdapter     订单 / 售后 / 结算 / 店播排期
+
+IngestionService
+├─ MySQL UPSERT（按业务主键幂等）
+├─ ods_fetch_log（每次拉取结果）
+├─ etl_watermark（成功窗口只前进）
+└─ etl_model_run（layer=ods）
+```
+
+`JobDefinition.kind=ingest` 的任务走 `IngestionService`；`kind=sql` 保持 M0 的 SQL Runner 路径。
+
 ## 一次运行的路径
 
 1. `POST /api/v1/jobs/{id}/run` 或 APScheduler 触发。
@@ -35,3 +52,10 @@ MySQL
 - `PipelineRunner` 统一使用 job 的窗口；模型头部的 `@window` / `@incremental_key` 已解析但尚未参与调度与增量回刷。
 - `retry` / `timeout_seconds` 已进入任务定义，M0 尚未执行重试与超时取消；锁 TTL 会按 `timeout_seconds + 60` 设置。
 - 质量检查目前仅内置 demo 表在 `single_db` 布局下的 `gmv_not_null`，真实业务任务需扩展为可配置检查。
+
+## M1 已知限制
+
+- 店播排期只从 CSV 导入；抖店适配器不提供官方直播场次接口。
+- 千川使用长期 access token，未实现 OAuth 刷新。
+- 订单商品行、分钟直播统计、达人档案留待 M2。
+- API Job 默认关闭，配置凭证后手动启用。

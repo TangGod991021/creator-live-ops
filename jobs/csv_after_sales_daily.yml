@@ -1,0 +1,13 @@
+id: csv_after_sales_daily
+lane: csv_import
+schedule: "10 2 * * *"
+resource: after_sales
+window: day
+kind: ingest
+adapter: csv_import
+depends_on: []
+retry:
+  max_attempts: 2
+  backoff_seconds: 10
+timeout_seconds: 600
+enabled: true

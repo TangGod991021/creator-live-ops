@@ -1,0 +1,13 @@
+id: douyin_after_sales_daily
+lane: douyin_shop
+schedule: "20 1 * * *"
+resource: after_sales
+window: day
+kind: ingest
+adapter: douyin_shop
+depends_on: []
+retry:
+  max_attempts: 3
+  backoff_seconds: 30
+timeout_seconds: 900
+enabled: false
